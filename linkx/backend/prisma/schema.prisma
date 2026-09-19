@@ -1,0 +1,61 @@
+// LinkX — Prisma schema
+// Run `npx prisma generate` after editing, and `npx prisma migrate dev` to apply.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  urls Url[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Url {
+  id          String    @id @default(cuid())
+  originalUrl String    @db.Text
+  shortCode   String    @unique
+  customAlias String?   @unique
+  clickCount  Int       @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  clicks Click[]
+
+  @@index([shortCode])
+  @@index([customAlias])
+  @@index([userId])
+  @@map("urls")
+}
+
+model Click {
+  id        String   @id @default(cuid())
+  clickedAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  referer   String?
+
+  urlId String
+  url   Url    @relation(fields: [urlId], references: [id], onDelete: Cascade)
+
+  @@index([urlId])
+  @@index([clickedAt])
+  @@map("clicks")
+}

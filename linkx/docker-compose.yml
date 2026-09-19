@@ -1,0 +1,25 @@
+version: "3.9"
+
+# Runs only PostgreSQL in Docker. Run the backend and frontend locally with
+# `npm run dev` in their respective folders (see the root README).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: linkx-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: linkx
+    ports:
+      - "5432:5432"
+    volumes:
+      - linkx_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U username -d linkx"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  linkx_postgres_data:
