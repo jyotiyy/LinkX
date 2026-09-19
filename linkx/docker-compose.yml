@@ -1,7 +1,5 @@
 version: "3.9"
 
-# Runs only PostgreSQL in Docker. Run the backend and frontend locally with
-# `npm run dev` in their respective folders (see the root README).
 services:
   postgres:
     image: postgres:16-alpine
